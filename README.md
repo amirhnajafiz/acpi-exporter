@@ -5,7 +5,13 @@ Cloud native Prometheus exporter for exporting Advanced Configuration and Power 
 ## TODO
 
 - [ ] Checkout `/proc/acpi` output
-- [ ] Convert the output to separated fields
+  - Also need data for
+    - Battery: `/sys/class/power_supply/BAT0/`
+    - AC Adapter: `/sys/class/power_supply/AC/`
+    - Thermal Zones: `/sys/class/thermal/thermal_zone*`
+    - Fans (if supported): `/proc/acpi/fan/, sometimes /sys/class/hwmon/`
+- [ ] Convert the output to Prometheus metrics
+  - Types [prometheus.io/docs/concepts/metric_types](https://prometheus.io/docs/concepts/metric_types/)
 - [ ] Export the values using Prometheus exporter
   - Using this library [github.com/prometheus/client_python](https://github.com/prometheus/client_python)
 - [ ] Create Dockerfile
