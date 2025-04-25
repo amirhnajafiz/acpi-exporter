@@ -2,8 +2,6 @@ from __global_paths import *
 from prometheus_client import Gauge, start_http_server
 import os, re, time
 
-# 1) Define your sensors and register Gauges exactly once:
-
 # basic single-location metrics
 basic = [
     ("Battery_level",   BATTERY_DIR + "charge_now"),
@@ -55,7 +53,6 @@ for d, _ in acpi_sensors:
     gauges[f"{d}_on"]    = Gauge(f"{d}_on",    f"{d} on/off")
     gauges[f"{d}_speed"] = Gauge(f"{d}_speed", f"{d} RPM")
 
-# 2) Start HTTP server
 start_http_server(8000)
 
 def update_all():
