@@ -13,28 +13,37 @@ basic = [
 
 # thermal_zones
 thermal_sensors = []
-for d in os.listdir(THERMAL_DIR):
-    p = os.path.join(THERMAL_DIR, d, "temp")
-    if d.startswith("thermal_zone") and os.path.isfile(p):
-        thermal_sensors.append((f"{d}_temp", p))
+try:
+    for d in os.listdir(THERMAL_DIR):
+        p = os.path.join(THERMAL_DIR, d, "temp")
+        if d.startswith("thermal_zone") and os.path.isfile(p):
+            thermal_sensors.append((f"{d}_temp", p))
+except:
+    pass
 
 # hwmons
 hwmon_re  = re.compile(r'^hwmon\d+$')
 sensor_re = re.compile(r'^(temp\d+_(?:input|max))$')
 hwmon_sensors = []
-for d in os.listdir(FAN2_DIR):
-    if hwmon_re.match(d):
-        base = os.path.join(FAN2_DIR, d)
-        for fname in os.listdir(base):
-            if sensor_re.match(fname):
-                hwmon_sensors.append((f"{d}_{fname}", os.path.join(base, fname)))
+try:
+    for d in os.listdir(FAN2_DIR):
+        if hwmon_re.match(d):
+            base = os.path.join(FAN2_DIR, d)
+            for fname in os.listdir(base):
+                if sensor_re.match(fname):
+                    hwmon_sensors.append((f"{d}_{fname}", os.path.join(base, fname)))
+except:
+    pass
 
 # acpi fans
 acpi_sensors = []
-# for d in os.listdir(FAN_DIR):
-#     p = os.path.join(FAN_DIR, d, "state")
-#     if os.path.isfile(p):
-#         acpi_sensors.append((d, p))
+try:
+    for d in os.listdir(FAN_DIR):
+        p = os.path.join(FAN_DIR, d, "state")
+        if os.path.isfile(p):
+            acpi_sensors.append((d, p))
+except:
+    pass
 
 # create all Gauges once
 gauges = {}
