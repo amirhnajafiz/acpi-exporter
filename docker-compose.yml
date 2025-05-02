@@ -1,12 +1,13 @@
+version: '3.9'
+
 services:
-  web:
+  exporter:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: build/Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./src:/app
+      - config.yaml:/app/config.yaml
     environment:
       - PYTHONUNBUFFERED=1
-
