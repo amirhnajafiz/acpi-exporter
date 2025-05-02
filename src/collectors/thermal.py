@@ -8,4 +8,3 @@ def metrics() -> dict[str, float]:
             label = (e.label or "temp").replace(" ", "_").lower()
             out[f"{dev}_{label}"] = float(e.current)
     return out
-

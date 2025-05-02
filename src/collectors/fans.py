@@ -11,4 +11,3 @@ def metrics() -> dict[str, float]:
             label = (e.label or f"{dev}_{idx}").replace(" ", "_").lower()
             out[f"{label}_rpm"] = float(e.current)
     return out
-

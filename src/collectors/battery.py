@@ -8,4 +8,3 @@ def metrics() -> dict[str, float]:
         "battery_pct": float(bat.percent),
         "battery_secs_left": float(bat.secsleft),
     }
-
