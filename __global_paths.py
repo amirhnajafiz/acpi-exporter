@@ -1,7 +1,0 @@
-ACPI_DIR            = "/proc/acpi/"
-ACPI2_DIR           = "/sys/firmware/acpi/"
-BATTERY_DIR         = "/sys/class/power_supply/BAT0/"
-AC_ADAPTER_DIR      = "/sys/class/power_supply/AC/"
-THERMAL_DIR         = "/sys/class/thermal/"
-FAN_DIR             = "/proc/acpi/fan/"
-FAN2_DIR            = "/sys/class/hwmon/"

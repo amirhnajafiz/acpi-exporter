@@ -1,0 +1,3 @@
+exporter:
+  port: 8000
+  interval: 5
