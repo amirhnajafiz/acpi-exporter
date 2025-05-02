@@ -1,0 +1,21 @@
+{
+    "variable": {
+      "TAG": {
+        "default": "latest"
+      }
+    },
+    "group": {
+      "default": {
+        "targets": ["acpi-exporter"]
+      }
+    },
+    "target": {
+      "nfs-metrics-exporter": {
+        "context": ".",
+        "dockerfile": "build/Dockerfile",
+        "tags": ["ghcr.io/amirhnajafiz/acpi-exporter:${TAG}"],
+        "output": ["type=registry"]
+      }
+    }
+  }
+  
