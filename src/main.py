@@ -1,28 +1,11 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import os, sys, time, yaml
+import os, sys, time
 import logging
-
 from prometheus_client import Gauge, start_http_server
 
+from internal import logr, configs
 
-
-def load_config():
-    config_path = Path(__file__).parent / "config.yaml"
-    if not config_path.exists():
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
-    with open(config_path, "r") as f:
-        return yaml.safe_load(f)
-
-
-def configure_logging(log_level):
-    level = getattr(logging, log_level.upper(), logging.INFO)
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[logging.StreamHandler(sys.stdout)],
-    )
-    logging.info(f"logging configured with level: {log_level}")
 
 
 def discover(namespace, subsystem):
@@ -55,8 +38,8 @@ def update(mods, gauges, node_name):
 
 
 def main():
-    config = load_config()
-    configure_logging(config.get("log_level", "INFO"))  # Configure logging with level from config
+    config = configs.load_configs(Path(__file__).parent / "config.yaml")
+    logr.configure_logging(config.get("log_level", "INFO"))  # Configure logging with level from config
 
     node_name = os.getenv("NODE_NAME", "default_node")
 
