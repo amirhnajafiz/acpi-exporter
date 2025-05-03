@@ -1,4 +1,4 @@
-import psutil
+import logging, psutil
 
 def metrics() -> dict[str, float]:
     out = {}
@@ -10,5 +10,6 @@ def metrics() -> dict[str, float]:
                 out[f"{dev}_{label}"] = float(e.current)
     except AttributeError:
         # handle platforms where sensors_temperatures is not supported
-        print("Temperature sensors are not supported on this platform.")
+        logging.error("temperature sensors are not supported on this platform.")
+
     return out
