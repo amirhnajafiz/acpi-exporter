@@ -8,7 +8,14 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - configs/example.config.yaml:/app/config.yaml
+      - ./configs/example.config.yaml:/app/config.yaml
     environment:
       - PYTHONUNBUFFERED=1
-      - NODE_NAME=exporter
+      - NODE_NAME=exporter-node
+  
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090" # Prometheus UI
