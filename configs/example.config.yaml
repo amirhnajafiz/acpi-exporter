@@ -1,3 +1,9 @@
-exporter:
-  port: 8000
-  interval: 5
+# Metrics server port
+port: 8000
+
+# Exporter interval in seconds
+interval: 5
+
+# Exporter NS and subsystem
+namespace: "ACPI"
+subsystem: "exporter"
