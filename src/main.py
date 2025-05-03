@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import os, sys, argparse, time
+import os, sys, time, yaml
 from prometheus_client import Gauge, start_http_server
 
 
 
-def parse_args():
-    p = argparse.ArgumentParser()
-    p.add_argument("--port", type=int, default=8000)
-    p.add_argument("--interval", type=int, default=5)
-    p.add_argument("--namespace", type=str, default="ACPI")
-    p.add_argument("--subsystem", type=str, default="EXPT")
-    return p.parse_args()
+def load_config():
+    config_path = Path(__file__).parent / "config.yaml"
+    if not config_path.exists():
+        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
 
 def discover(namespace, subsystem):
     here = Path(__file__).parent  # .../src
@@ -39,15 +38,15 @@ def update(mods, gauges, node_name):
             gauges[k].labels(collector=name, node=node_name).set(v)
 
 def main():
-    args = parse_args()
+    config = load_config()
     node_name = os.getenv("NODE_NAME", "default_node")
 
-    modules, gauges = discover(args.namespace, args.subsystem)
-    start_http_server(args.port)
-    print(f"[exporter] Listening on :{args.port} (interval={args.interval}s, namespace={args.namespace}, subsystem={args.subsystem})")
+    modules, gauges = discover(config["namespace"], config["subsystem"])
+    start_http_server(config["port"])
+    print(f"[exporter] Listening on :{config['port']} (interval={config['interval']}s, namespace={config['namespace']}, subsystem={config['subsystem']})")
     while True:
         update(modules, gauges, node_name)
-        time.sleep(args.interval)
+        time.sleep(float(config["interval"]))
 
 if __name__ == "__main__":
     main()
