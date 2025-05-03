@@ -7,3 +7,6 @@ interval: 5
 # Exporter NS and subsystem
 namespace: "ACPI"
 subsystem: "exporter"
+
+# Set the desired log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+log_level: "DEBUG"
