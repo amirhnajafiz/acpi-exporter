@@ -1,16 +1,14 @@
 # ACPI Exporter
 
-Cloud native Prometheus exporter for exporting Advanced Configuration and Power Interface metrics of nodes, specifically in a Kubernetes cluster.
+Cloud native Prometheus exporter for exporting Advanced Configuration and Power Interface (ACPI) metrics of nodes, specifically in a Kubernetes cluster.
 
-## Build
+## Test
 
-Execute `sudo docker build --no-cache -t acpi-exporter:latest .`
+Run the following command to set up an instance of ACPI exporter with a Prometheus server:
 
-## Run
-
-Execute `sudo docker run -td --privileged --pid=host -p 8000:8000 acpi-exporter:latest --port 8000`
-
-Change ports as needed.
+```sh
+docker-compose up -d
+```
 
 ## TODO
 

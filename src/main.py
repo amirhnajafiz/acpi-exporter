@@ -84,6 +84,7 @@ def main():
     start_http_server(config["port"])
     logging.info(
         f"listening on :{config['port']} "
+        f"node={node_name} "
         f"(interval={config['interval']}s, namespace={config['namespace']}, subsystem={config['subsystem']})"
     )
 

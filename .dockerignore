@@ -1,11 +1,15 @@
+# dot files
 .git/
 .github/
 .idea/
 .vscode/
   
+# application exported files
 vendor/
 logs/
-  
-README.md
+node_modules/
+venv/
 
+# other
+README.md
 .DS_Store
