@@ -9,13 +9,18 @@ services:
       - "8000:8000"
     volumes:
       - ./configs/example.config.yaml:/app/config.yaml
+      - ./configs/example.config.yaml:/app/src/config.yaml
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
     environment:
       - PYTHONUNBUFFERED=1
       - NODE_NAME=exporter-node
+      - HOST_PROC=/host/proc
   
   prometheus:
     image: prom/prometheus
     volumes:
       - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090" # Prometheus UI
+      - "9090:9090"  # Prometheus UI
+

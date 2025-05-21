@@ -5,6 +5,7 @@ import os, sys, time
 import logging
 from prometheus_client import Gauge, start_http_server
 from internal import logr, configs  # Custom modules for logging and configuration management
+import psutil._pslinux as _pslinux
 
 
 
@@ -64,6 +65,14 @@ def main():
 
     # Configure logging based on the log level specified in the configuration
     logr.configure_logging(config.get("log_level", "INFO"))
+
+    # Patch proc-fs path to match that of the host device
+    host_proc = os.environ.get("HOST_PROC")
+    if (host_proc):
+        # _pslinux.PROCFS_PATH = host_proc
+        logging.info(f"Using host_proc: {host_proc}");
+    else:
+        logging.info(f"Not using host_proc");
 
     # Get the node name from the environment variable or use a default value
     node_name = os.getenv("NODE_NAME", "default_node")
