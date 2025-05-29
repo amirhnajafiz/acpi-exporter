@@ -10,7 +10,7 @@
       }
     },
     "target": {
-      "nfs-metrics-exporter": {
+      "acpi-exporter": {
         "context": ".",
         "dockerfile": "build/Dockerfile",
         "tags": ["ghcr.io/amirhnajafiz/acpi-exporter:${TAG}"],
@@ -18,4 +18,4 @@
       }
     }
   }
-  
+

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acpi-exporter-config
+data:
+  config.yaml: |-
+    port: 8000
+    interval: 5
+    namespace: "ACPI"
+    subsystem: "exporter"
+    log_level: "DEBUG"
+
