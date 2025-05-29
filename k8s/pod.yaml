@@ -5,8 +5,8 @@ metadata:
   name: acpi-exporter
   namespace: acpi-exporter
   labels:
-    app: acpi-exporter
-    component: pod
+    app.kubernetes.io/component: acpi-exporter-pod
+    app.kubernetes.io/name: acpi-exporter
 spec:
   containers:
     - name: acpi-exporter

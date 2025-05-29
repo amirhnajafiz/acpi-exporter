@@ -5,8 +5,8 @@ metadata:
   name: acpi-exporter-config
   namespace: acpi-exporter
   labels:
-    app: acpi-exporter
-    component: config
+    app.kubernetes.io/component: acpi-exporter-configmap
+    app.kubernetes.io/name: acpi-exporter
 data:
   config.yaml: |-
     port: 8000

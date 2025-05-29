@@ -1,0 +1,23 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/component: acpi-exporter-service-monitor
+    app.kubernetes.io/name: acpi-exporter
+  name: acpi-exporter-service-monitor
+  namespace: acpi-exporter
+spec:
+  endpoints:
+  - honorLabels: false
+    interval: 15s
+    path: /metrics
+    port: metrics
+    relabelings: []
+  namespaceSelector:
+    matchNames:
+    - acpi-exporter
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: acpi-exporter-pod
+      app.kubernetes.io/name: acpi-exporter

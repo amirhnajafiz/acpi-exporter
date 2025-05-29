@@ -5,8 +5,8 @@ metadata:
   name: acpi-exporter-metrics
   namespace: acpi-exporter
   labels:
-    app: acpi-exporter
-    component: service
+    app.kubernetes.io/component: acpi-exporter-service
+    app.kubernetes.io/name: acpi-exporter
 spec:
   type: ClusterIP
   ports:
@@ -15,5 +15,5 @@ spec:
       protocol: TCP
       name: metrics
   selector:
-    app: acpi-exporter
-    component: pod
+    app.kubernetes.io/component: acpi-exporter-pod
+    app.kubernetes.io/name: acpi-exporter
