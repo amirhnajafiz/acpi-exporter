@@ -19,5 +19,5 @@ spec:
     - acpi-exporter
   selector:
     matchLabels:
-      app.kubernetes.io/component: acpi-exporter-pod
+      app.kubernetes.io/component: acpi-exporter-service
       app.kubernetes.io/name: acpi-exporter
