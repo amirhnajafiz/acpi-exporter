@@ -25,9 +25,11 @@ docker-compose up -d
 - [X] Create Dockerfile
   - Useful blog [hasura.io/blog/how-to-write-dockerfiles-for-python-web-apps](https://hasura.io/blog/how-to-write-dockerfiles-for-python-web-apps-6d173842ae1d)
 - [X] Deploy using docker-compose
-- [ ] Host namespace issue
-- [ ] Create Kubernetes manifests
-- [ ] Deploy over Kubernetes using a simple Pod
-- [ ] Deploy over Kubernetes using a daemonset
+- [X] Host namespace issue
+- [X] Create Kubernetes manifests
+- [X] Deploy over Kubernetes using a simple Pod
+- [X] Deploy over Kubernetes using a daemonset
 - [ ] Use Helm Charts for packaging
-
+- [ ] Metrics refactor
+- [ ] New metrics
+- [ ] Documentation
