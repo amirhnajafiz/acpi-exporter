@@ -2,6 +2,8 @@ version: '3.9'
 
 services:
   exporter:
+    privileged: true  # needed by pyRAPL
+    user: root  # needed by pyRAPL
     build:
       context: .
       dockerfile: build/Dockerfile
@@ -11,7 +13,8 @@ services:
       - ./configs/example.config.yaml:/app/config.yaml
       - ./configs/example.config.yaml:/app/src/config.yaml
       - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
+      # - /sys:/host/sys:ro
+      # - /sys/class/powercap:/sys/class/powercap:ro
     environment:
       - PYTHONUNBUFFERED=1
       - NODE_NAME=exporter-node
