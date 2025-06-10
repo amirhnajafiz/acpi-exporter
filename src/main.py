@@ -24,19 +24,23 @@ def discover(namespace, subsystem):
     sys.path.insert(0, str(here))  # Add the current directory to the Python path
     coll_dir = here / "collectors"  # Path to the 'collectors' directory
 
+
     modules, gauges = {}, {}
-    for file in coll_dir.glob("*.py"):  # Iterate over all Python files in the 'collectors' directory
-        mod = __import__(f"collectors.{file.stem}", fromlist=["metrics"])  # Dynamically import the module
-        modules[file.stem] = mod  # Store the module in the dictionary
-        for key in mod.metrics().keys():  # Iterate over the metrics defined in the module
-            if key not in gauges:  # Avoid duplicate Gauge creation
+    for file in coll_dir.glob("*.py"):
+        mod = __import__(f"collectors.{file.stem}", fromlist=["metrics"])
+        modules[file.stem] = mod
+        # prime the metric cache once to learn label layouts
+        for mname, lbls, _ in mod.metrics():
+            key = (mname, tuple(sorted(lbls.keys())))
+            if key not in gauges:
                 gauges[key] = Gauge(
-                    key,
-                    f"ACPI metric {key}",
+                    mname,
+                    f"ACPI metric {mname}",
                     namespace=namespace,
                     subsystem=subsystem,
-                    labelnames=["collector", "node"],  # Labels for Prometheus metrics
+                    labelnames=["collector", "node", *sorted(lbls.keys())],  # Labels for Prometheus metrics
                 )
+
     logging.info(f"discovered collectors: {list(modules.keys())}")  # Log the discovered collectors
     return modules, gauges
 
@@ -50,9 +54,12 @@ def update(mods, gauges, node_name):
         gauges (dict): Dictionary of Prometheus Gauge objects.
         node_name (str): The name of the node (e.g., hostname).
     """
-    for name, mod in mods.items():  # Iterate over all loaded modules
-        for k, v in mod.metrics().items():  # Get the metrics from the module
-            gauges[k].labels(collector=name, node=node_name).set(v)  # Update the Gauge with the metric value
+    for cname, mod in mods.items():  # Iterate over all loaded modules
+        for mname, lbls, value in mod.metrics():  # Get the metrics from the module
+            key = (mname, tuple(sorted(lbls.keys())))
+            gauges[key].labels(
+                collector=cname, node=node_name, **lbls
+            ).set(value)  # Update the Gauge with the metric value
     logging.debug(f"updated metrics for node: {node_name}")  # Log the update operation
 
 
