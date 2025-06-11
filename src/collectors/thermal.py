@@ -11,8 +11,9 @@ class ThermalCollector(Collector):
     This collector uses the psutil library to access temperature information.
     """
 
-    def __init__(self, **labels):
+    def __init__(self, exec_info: bool, **labels):
         self.labels = labels
+        self.exec_info = exec_info
         label_names = list(labels.keys()) + ["device", "sensor"]
         self.temp_gauge = Gauge(
             "temperature_celsius", "Temperature in Celsius", labelnames=label_names
@@ -26,8 +27,13 @@ class ThermalCollector(Collector):
                     all_labels = {**self.labels, "device": dev, "sensor": sensor_lbl}
                     self.temp_gauge.labels(**all_labels).set(float(e.current))
         except AttributeError:
-            logging.warning(
-                "psutil.sensors_temperatures() is not supported on this platform."
-            )
+            logging.warning("psutil.sensors_temperatures() is not supported on this platform")
         except Exception as e:
-            logging.error(f"An error occurred while collecting thermal data: {e}")
+            if self.exec_info:
+                logging.error(
+                    f"An error occurred while collecting temperature data: {e}",
+                    exc_info=True,
+                    stack_info=True,
+                )
+            else:
+                logging.error(f"An error occurred while collecting temperature data")

@@ -1,6 +1,5 @@
 import psutil
 from prometheus_client import Gauge
-
 from .collector import Collector
 
 class BatteryCollector(Collector):

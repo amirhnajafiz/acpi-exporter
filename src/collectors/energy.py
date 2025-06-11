@@ -1,7 +1,6 @@
 import logging
 import os
 from prometheus_client import Gauge
-
 from .collector import Collector
 
 class EnergyCollector(Collector):
@@ -9,8 +8,9 @@ class EnergyCollector(Collector):
     Energy collector for gathering total energy consumption metrics.
     """
 
-    def __init__(self, **labels):
+    def __init__(self, exec_info: bool, **labels):
         self.labels = labels
+        self.exec_info = exec_info
         label_names = list(labels.keys()) + ["source"]
         self.energy_joules_gauge = Gauge(
             "energy_consumed_joules", "Total energy consumed in Joules", labelnames=label_names
@@ -25,4 +25,11 @@ class EnergyCollector(Collector):
                     energy_uj = int(f.read())
                 self.energy_joules_gauge.labels(**self.labels, source="rapl").set(energy_uj / 1_000_000)
         except Exception as e:
-            logging.error(f"Error collecting energy consumption: {e}", exc_info=True)
+            if self.exec_info:
+                logging.error(
+                    f"An error occurred while collecting energy data: {e}",
+                    exc_info=True,
+                    stack_info=True,
+                )
+            else:
+                logging.error(f"An error occurred while collecting energy data")

@@ -1,6 +1,6 @@
 import logging
+import subprocess
 from prometheus_client import Gauge
-
 from .collector import Collector
 
 class UPSCollector(Collector):
@@ -8,8 +8,9 @@ class UPSCollector(Collector):
     Collector for UPS status (requires NUT or apcupsd integration).
     """
 
-    def __init__(self, **labels):
+    def __init__(self, exec_info: bool, **labels):
         self.labels = labels
+        self.exec_info = exec_info
         self.ups_charge_gauge = Gauge(
             "ups_battery_charge_pct", "UPS battery charge percentage", labelnames=list(labels.keys())
         )
@@ -19,7 +20,6 @@ class UPSCollector(Collector):
 
     def collect(self):
         # Example: parse output from 'upsc' (NUT)
-        import subprocess
         try:
             output = subprocess.check_output(["upsc", "myups@localhost"]).decode()
             for line in output.splitlines():
@@ -30,4 +30,11 @@ class UPSCollector(Collector):
                     status = line.split(":")[1].strip()
                     self.ups_online_gauge.labels(**self.labels).set(1 if status == "OL" else 0)
         except Exception as e:
-            logging.warning(f"An error occurred while collecting UPS data: {e}")
+            if self.exec_info:
+                logging.error(
+                    f"An error occurred while collecting UPS data: {e}",
+                    exc_info=True,
+                    stack_info=True,
+                )
+            else:
+                logging.error(f"An error occurred while collecting UPS data")

@@ -1,6 +1,6 @@
 import os
+import time
 from prometheus_client import Gauge
-
 from .collector import Collector
 
 class CPUPowerCollector(Collector):
@@ -17,7 +17,6 @@ class CPUPowerCollector(Collector):
         self.last_time = None
 
     def collect(self):
-        import time
         energy_path = "/sys/class/powercap/intel-rapl:0/energy_uj"
         if os.path.exists(energy_path):
             with open(energy_path) as f:

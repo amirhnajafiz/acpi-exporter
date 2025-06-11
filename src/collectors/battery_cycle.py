@@ -1,7 +1,6 @@
 import glob
 import logging
 from prometheus_client import Gauge
-
 from .collector import Collector
 
 class BatteryCycleCollector(Collector):
@@ -9,8 +8,9 @@ class BatteryCycleCollector(Collector):
     Collector for battery cycle count.
     """
 
-    def __init__(self, **labels):
+    def __init__(self, exec_info: bool, **labels):
         self.labels = labels
+        self.exec_info = exec_info
         self.cycle_gauge = Gauge(
             "battery_cycle_count", "Battery cycle count", labelnames=list(labels.keys()) + ["battery"]
         )
@@ -23,7 +23,11 @@ class BatteryCycleCollector(Collector):
                 battery = path.split("/")[4]
                 self.cycle_gauge.labels(**self.labels, battery=battery).set(count)
             except Exception as e:
-                logging.error(
-                    f"An error occurred while collecting battery cycle count for {path}: {e}",
-                    exc_info=True,
-                )
+                if self.exec_info:
+                    logging.error(
+                        f"An error occurred while collecting battery cycle count for {path}: {e}",
+                        exc_info=True,
+                        stack_info=True,
+                    )
+                else:
+                    logging.error(f"An error occurred while collecting battery cycle count for {path}")
