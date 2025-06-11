@@ -30,7 +30,4 @@ class ThermalCollector(Collector):
                 "psutil.sensors_temperatures() is not supported on this platform."
             )
         except Exception as e:
-            logging.error(
-                f"An error occurred while collecting thermal data: {e}",
-                exc_info=True,
-            )
+            logging.error(f"An error occurred while collecting thermal data: {e}")

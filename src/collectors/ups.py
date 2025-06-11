@@ -30,7 +30,4 @@ class UPSCollector(Collector):
                     status = line.split(":")[1].strip()
                     self.ups_online_gauge.labels(**self.labels).set(1 if status == "OL" else 0)
         except Exception as e:
-            logging.error(
-                f"An error occurred while collecting UPS data: {e}",
-                exc_info=True,
-            )
+            logging.warning(f"An error occurred while collecting UPS data: {e}")

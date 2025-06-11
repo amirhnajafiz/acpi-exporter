@@ -30,10 +30,14 @@ spec:
             - name: metrics
               containerPort: 8000
           volumeMounts:
+            - name: sysclass
+              mountPath: /sys/class
             - name: config
               mountPath: /app/src/config.yaml
               subPath: config.yaml
       volumes:
+        - name: sysclass
+          hostPath: /sys/class
         - name: config
           configMap:
             name: acpi-exporter-config
