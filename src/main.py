@@ -4,11 +4,12 @@ from pathlib import Path
 import os, time
 import logging
 from prometheus_client import start_http_server
-from internal import logr, configs  # Custom modules for logging and configuration management
+
+from internal import logr, configs
 
 
 
-def discover(namespace, subsystem):
+def discover(namespace: str, subsystem: str) -> list:
     """
     Discover and instantiate metric collectors from the 'collectors' directory.
 
@@ -23,11 +24,11 @@ def discover(namespace, subsystem):
     from collectors.fans import FansCollector
     from collectors.thermal import ThermalCollector
     
-    return {
-        "battery": BatteryCollector(namespace=namespace, subsystem=subsystem),
-        "fans": FansCollector(namespace=namespace, subsystem=subsystem),
-        "thermal": ThermalCollector(namespace=namespace, subsystem=subsystem),
-    }
+    return [
+        BatteryCollector(namespace=namespace, subsystem=subsystem),
+        FansCollector(namespace=namespace, subsystem=subsystem),
+        ThermalCollector(namespace=namespace, subsystem=subsystem),
+    ]
 
 def update(collectors):
     """
@@ -36,7 +37,7 @@ def update(collectors):
     Args:
         collectors (dict): Dictionary of collector instances.
     """
-    for cname, collector in collectors.items():
+    for collector in collectors:
         collector.collect()
 
 def main():
@@ -46,14 +47,7 @@ def main():
     config = configs.load_configs(Path(__file__).parent / "config.yaml")
     logr.configure_logging(config.get("log_level", "INFO"))
 
-    host_proc = os.environ.get("HOST_PROC")
-    if host_proc:
-        logging.info(f"Using host_proc: {host_proc}")
-    else:
-        logging.info(f"Not using host_proc")
-
     node_name = os.getenv("NODE_NAME", "default_node")
-
     collectors = discover(config["namespace"], config["subsystem"])
 
     start_http_server(config["port"])
@@ -63,6 +57,7 @@ def main():
         f"(interval={config['interval']}s, namespace={config['namespace']}, subsystem={config['subsystem']})"
     )
 
+    # internal main loop
     while True:
         update(collectors)
         time.sleep(float(config["interval"]))
