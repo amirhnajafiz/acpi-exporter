@@ -10,7 +10,8 @@ metadata:
 spec:
   containers:
     - name: acpi-exporter
-      image: ajoukov/acpi-exporter:latest
+      image: ghcr.io/amirhnajafiz/acpi-exporter:v0.1.0
+      imagePullPolicy: IfNotPresent
       ports:
         - name: metrics
           containerPort: 8000
