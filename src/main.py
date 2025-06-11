@@ -18,14 +18,30 @@ def discover(namespace: str, subsystem: str) -> list:
     Returns:
         dict: A dictionary of collector instances.
     """
+    from collectors.ac_power import ACPowerCollector
+    from collectors.battery_cycle import BatteryCycleCollector
     from collectors.battery import BatteryCollector
+    from collectors.cpu_power import CPUPowerCollector
+    from collectors.energy import EnergyCollector
     from collectors.fans import FansCollector
+    from collectors.idle_time import IdleTimeCollector
+    from collectors.nvme_power import NVMePowerCollector
+    from collectors.power import PowerCollector
     from collectors.thermal import ThermalCollector
+    from collectors.ups import UPSCollector
     
     return [
+        ACPowerCollector(namespace=namespace, subsystem=subsystem),
+        BatteryCycleCollector(namespace=namespace, subsystem=subsystem),
         BatteryCollector(namespace=namespace, subsystem=subsystem),
+        CPUPowerCollector(namespace=namespace, subsystem=subsystem),
+        EnergyCollector(namespace=namespace, subsystem=subsystem),
         FansCollector(namespace=namespace, subsystem=subsystem),
+        IdleTimeCollector(namespace=namespace, subsystem=subsystem),
+        NVMePowerCollector(namespace=namespace, subsystem=subsystem),
+        PowerCollector(namespace=namespace, subsystem=subsystem),
         ThermalCollector(namespace=namespace, subsystem=subsystem),
+        UPSCollector(namespace=namespace, subsystem=subsystem),
     ]
 
 def update(collectors):
