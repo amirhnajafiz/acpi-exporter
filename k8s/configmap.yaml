@@ -14,3 +14,4 @@ data:
     namespace: "ACPI"
     subsystem: "exporter"
     log_level: "INFO"
+    trace_errors: false

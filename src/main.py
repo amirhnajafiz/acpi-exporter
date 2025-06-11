@@ -7,11 +7,12 @@ from internal import logr, configs
 
 
 
-def discover(namespace: str, subsystem: str) -> list:
+def discover(ei: bool, namespace: str, subsystem: str) -> list:
     """
     Discover and instantiate metric collectors from the 'collectors' directory.
 
     Args:
+        ei (bool): Whether to include execution info in logging.
         namespace (str): The namespace for Prometheus metrics.
         subsystem (str): The subsystem for Prometheus metrics.
 
@@ -31,17 +32,17 @@ def discover(namespace: str, subsystem: str) -> list:
     from collectors.ups import UPSCollector
     
     return [
-        ACPowerCollector(namespace=namespace, subsystem=subsystem),
-        BatteryCycleCollector(namespace=namespace, subsystem=subsystem),
+        ACPowerCollector(ei, namespace=namespace, subsystem=subsystem),
+        BatteryCycleCollector(ei, namespace=namespace, subsystem=subsystem),
         BatteryCollector(namespace=namespace, subsystem=subsystem),
         CPUPowerCollector(namespace=namespace, subsystem=subsystem),
-        EnergyCollector(namespace=namespace, subsystem=subsystem),
-        FansCollector(namespace=namespace, subsystem=subsystem),
-        IdleTimeCollector(namespace=namespace, subsystem=subsystem),
-        NVMePowerCollector(namespace=namespace, subsystem=subsystem),
-        PowerCollector(namespace=namespace, subsystem=subsystem),
-        ThermalCollector(namespace=namespace, subsystem=subsystem),
-        UPSCollector(namespace=namespace, subsystem=subsystem),
+        EnergyCollector(ei, namespace=namespace, subsystem=subsystem),
+        FansCollector(ei, namespace=namespace, subsystem=subsystem),
+        IdleTimeCollector(ei, namespace=namespace, subsystem=subsystem),
+        NVMePowerCollector(ei, namespace=namespace, subsystem=subsystem),
+        PowerCollector(ei, namespace=namespace, subsystem=subsystem),
+        ThermalCollector(ei, namespace=namespace, subsystem=subsystem),
+        UPSCollector(ei, namespace=namespace, subsystem=subsystem),
     ]
 
 def update(collectors):
@@ -62,7 +63,7 @@ def main():
     logr.configure_logging(config.get("log_level", "INFO"))
 
     node_name = os.getenv("NODE_NAME", "default_node")
-    collectors = discover(config["namespace"], config["subsystem"])
+    collectors = discover(config["trace_errors"], config["namespace"], config["subsystem"])
 
     start_http_server(config["port"])
     logging.info(

@@ -10,3 +10,6 @@ subsystem: "exporter"
 
 # Set the desired log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 log_level: "DEBUG"
+
+# Trace errors
+trace_errors: false
