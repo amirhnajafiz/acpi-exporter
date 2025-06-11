@@ -1,21 +1,36 @@
-import logging, psutil
+import logging
+import psutil
+from prometheus_client import Gauge
 
-def metrics():
-    out = []
-    try:
-        for dev, entries in psutil.sensors_temperatures(fahrenheit=False).items():
-            for e in entries:
-                label = (e.label or "temp").strip()
-                if dev == "coretemp" and label.lower().startswith("core"):
-                    try:
-                        core_id = int("".join(filter(str.isdigit, label)))
-                    except ValueError:
-                        core_id = label
-                    out.append(("cpu_core_temp_celsius", {"core_number": core_id}, float(e.current)))
-                else:
-                    mname = f"{dev}_{label.replace(' ', '_').lower()}_celsius"
-                    out.append((mname, {}, float(e.current)))
-    except AttributeError:
-        # handle platforms where sensors_temperatures is not supported
-        logging.error("temperature sensors are not supported on this platform.")
-    return out
+from .collector import Collector
+
+
+class ThermalCollector(Collector):
+    """
+    Thermal collector for gathering temperature metrics.
+    This collector uses the psutil library to access temperature information.
+    """
+
+    def __init__(self, **labels):
+        self.labels = labels
+        label_names = list(labels.keys()) + ["device", "sensor"]
+        self.temp_gauge = Gauge(
+            "temperature_celsius", "Temperature in Celsius", labelnames=label_names
+        )
+
+    def collect(self):
+        try:
+            for dev, entries in psutil.sensors_temperatures(fahrenheit=False).items():
+                for idx, e in enumerate(entries):
+                    sensor_lbl = (e.label or f"{dev}_{idx}").replace(" ", "_").lower()
+                    all_labels = {**self.labels, "device": dev, "sensor": sensor_lbl}
+                    self.temp_gauge.labels(**all_labels).set(float(e.current))
+        except AttributeError:
+            logging.warning(
+                "psutil.sensors_temperatures() is not supported on this platform."
+            )
+        except Exception as e:
+            logging.error(
+                f"An error occurred while collecting thermal data: {e}",
+                exc_info=True,
+            )
