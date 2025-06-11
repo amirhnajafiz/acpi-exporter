@@ -1,93 +1,61 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
-import os, sys, time
+import os, time
 import logging
-from prometheus_client import Gauge, start_http_server
+from prometheus_client import start_http_server
 from internal import logr, configs  # Custom modules for logging and configuration management
-import psutil._pslinux as _pslinux
 
 
 
 def discover(namespace, subsystem):
     """
-    Discover and load metric collectors from the 'collectors' directory.
+    Discover and instantiate metric collectors from the 'collectors' directory.
 
     Args:
         namespace (str): The namespace for Prometheus metrics.
         subsystem (str): The subsystem for Prometheus metrics.
 
     Returns:
-        tuple: A dictionary of loaded modules and a dictionary of Prometheus Gauge objects.
+        dict: A dictionary of collector instances.
     """
-    here = Path(__file__).parent  # Path to the current script directory (e.g., .../src)
-    sys.path.insert(0, str(here))  # Add the current directory to the Python path
-    coll_dir = here / "collectors"  # Path to the 'collectors' directory
+    from collectors.battery import BatteryCollector
+    from collectors.fans import FansCollector
+    from collectors.thermal import ThermalCollector
+    
+    return {
+        "battery": BatteryCollector(namespace=namespace, subsystem=subsystem),
+        "fans": FansCollector(namespace=namespace, subsystem=subsystem),
+        "thermal": ThermalCollector(namespace=namespace, subsystem=subsystem),
+    }
 
-
-    modules, gauges = {}, {}
-    for file in coll_dir.glob("*.py"):
-        mod = __import__(f"collectors.{file.stem}", fromlist=["metrics"])
-        modules[file.stem] = mod
-        # prime the metric cache once to learn label layouts
-        for mname, lbls, _ in mod.metrics():
-            key = (mname, tuple(sorted(lbls.keys())))
-            if key not in gauges:
-                gauges[key] = Gauge(
-                    mname,
-                    f"ACPI metric {mname}",
-                    namespace=namespace,
-                    subsystem=subsystem,
-                    labelnames=["collector", "node", *sorted(lbls.keys())],  # Labels for Prometheus metrics
-                )
-
-    logging.info(f"discovered collectors: {list(modules.keys())}")  # Log the discovered collectors
-    return modules, gauges
-
-
-def update(mods, gauges, node_name):
+def update(collectors):
     """
     Update the Prometheus metrics with the latest values from the collectors.
 
     Args:
-        mods (dict): Dictionary of loaded collector modules.
-        gauges (dict): Dictionary of Prometheus Gauge objects.
-        node_name (str): The name of the node (e.g., hostname).
+        collectors (dict): Dictionary of collector instances.
     """
-    for cname, mod in mods.items():  # Iterate over all loaded modules
-        for mname, lbls, value in mod.metrics():  # Get the metrics from the module
-            key = (mname, tuple(sorted(lbls.keys())))
-            gauges[key].labels(
-                collector=cname, node=node_name, **lbls
-            ).set(value)  # Update the Gauge with the metric value
-    logging.debug(f"updated metrics for node: {node_name}")  # Log the update operation
-
+    for cname, collector in collectors.items():
+        collector.collect()
 
 def main():
     """
     Main function to initialize the exporter, load configurations, and start the HTTP server.
     """
-    # Load configurations from the YAML file
     config = configs.load_configs(Path(__file__).parent / "config.yaml")
-
-    # Configure logging based on the log level specified in the configuration
     logr.configure_logging(config.get("log_level", "INFO"))
 
-    # Patch proc-fs path to match that of the host device
     host_proc = os.environ.get("HOST_PROC")
-    if (host_proc):
-        # _pslinux.PROCFS_PATH = host_proc
-        logging.info(f"Using host_proc: {host_proc}");
+    if host_proc:
+        logging.info(f"Using host_proc: {host_proc}")
     else:
-        logging.info(f"Not using host_proc");
+        logging.info(f"Not using host_proc")
 
-    # Get the node name from the environment variable or use a default value
     node_name = os.getenv("NODE_NAME", "default_node")
 
-    # Discover metric collectors and initialize Prometheus Gauges
-    modules, gauges = discover(config["namespace"], config["subsystem"])
+    collectors = discover(config["namespace"], config["subsystem"])
 
-    # Start the Prometheus HTTP server on the specified port
     start_http_server(config["port"])
     logging.info(
         f"listening on :{config['port']} "
@@ -95,12 +63,9 @@ def main():
         f"(interval={config['interval']}s, namespace={config['namespace']}, subsystem={config['subsystem']})"
     )
 
-    # Periodically update metrics and sleep for the configured interval
     while True:
-        update(modules, gauges, node_name)
+        update(collectors)
         time.sleep(float(config["interval"]))
 
-
 if __name__ == "__main__":
-    # Entry point of the script
     main()
