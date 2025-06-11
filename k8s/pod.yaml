@@ -23,7 +23,9 @@ spec:
           subPath: config.yaml
   volumes:
     - name: sysclass
-      hostPath: /sys/class
+      hostPath:
+        path: /sys/class
+        type: Directory
     - name: config
       configMap:
         name: acpi-exporter-config
