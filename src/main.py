@@ -7,7 +7,7 @@ from internal import logr, configs
 
 
 
-def discover(ei: bool, namespace: str, subsystem: str) -> list:
+def discover(ei: bool, namespace: str, subsystem: str, nodename: str) -> dict:
     """
     Discover and instantiate metric collectors from the 'collectors' directory.
 
@@ -31,19 +31,23 @@ def discover(ei: bool, namespace: str, subsystem: str) -> list:
     from collectors.thermal import ThermalCollector
     from collectors.ups import UPSCollector
     
-    return [
-        ACPowerCollector(ei, namespace=namespace, subsystem=subsystem),
-        BatteryCycleCollector(ei, namespace=namespace, subsystem=subsystem),
-        BatteryCollector(namespace=namespace, subsystem=subsystem),
-        CPUPowerCollector(namespace=namespace, subsystem=subsystem),
-        EnergyCollector(ei, namespace=namespace, subsystem=subsystem),
-        FansCollector(ei, namespace=namespace, subsystem=subsystem),
-        IdleTimeCollector(ei, namespace=namespace, subsystem=subsystem),
-        NVMePowerCollector(ei, namespace=namespace, subsystem=subsystem),
-        PowerCollector(ei, namespace=namespace, subsystem=subsystem),
-        ThermalCollector(ei, namespace=namespace, subsystem=subsystem),
-        UPSCollector(ei, namespace=namespace, subsystem=subsystem),
-    ]
+    labels = {
+        "node": nodename,
+    }
+
+    return {
+        "acp": ACPowerCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "battery_cycle": BatteryCycleCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "battery": BatteryCollector(namespace=namespace, subsystem=subsystem, **labels),
+        "cpu_power": CPUPowerCollector(namespace=namespace, subsystem=subsystem, **labels),
+        "energy": EnergyCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "fans": FansCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "idle_time": IdleTimeCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "nvme_power": NVMePowerCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "power": PowerCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "thermal": ThermalCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+        "ups": UPSCollector(ei, namespace=namespace, subsystem=subsystem, **labels),
+    }
 
 def update(collectors):
     """
@@ -52,8 +56,9 @@ def update(collectors):
     Args:
         collectors (dict): Dictionary of collector instances.
     """
-    for collector in collectors:
+    for cnam, collector in collectors.items():
         collector.collect()
+        logging.debug(f"updated collector: {cnam} ({collector.__class__.__name__})")
 
 def main():
     """
@@ -63,7 +68,7 @@ def main():
     logr.configure_logging(config.get("log_level", "INFO"))
 
     node_name = os.getenv("NODE_NAME", "default_node")
-    collectors = discover(config["trace_errors"], config["namespace"], config["subsystem"])
+    collectors = discover(config["trace_errors"], config["namespace"], config["subsystem"], node_name)
 
     start_http_server(config["port"])
     logging.info(
