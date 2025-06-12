@@ -30,6 +30,7 @@ spec:
           securityContext:
             privileged: true
             readOnlyRootFilesystem: true
+            runAsUser: 0
           env:
           - name: "NODE_NAME"
             valueFrom:
