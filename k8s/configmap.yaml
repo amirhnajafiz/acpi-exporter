@@ -10,7 +10,7 @@ metadata:
 data:
   config.yaml: |-
     port: 8000
-    interval: 10
+    interval: 30
     namespace: "ACPI"
     subsystem: "exporter"
     log_level: "INFO"
