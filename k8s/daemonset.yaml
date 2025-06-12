@@ -41,6 +41,8 @@ spec:
           volumeMounts:
             - name: sysclass
               mountPath: /sys/class
+            - name: proc
+              mountPath: /proc
             - name: config
               mountPath: /app/src/config.yaml
               subPath: config.yaml
@@ -48,6 +50,10 @@ spec:
         - name: sysclass
           hostPath:
             path: /sys/class
+            type: Directory
+        - name: proc
+          hostPath:
+            path: /proc
             type: Directory
         - name: config
           configMap:
