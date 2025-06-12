@@ -18,10 +18,18 @@ spec:
         app.kubernetes.io/component: acpi-exporter-pod
         app.kubernetes.io/name: acpi-exporter
     spec:
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Equal"
+          value: "master"
+          effect: "NoSchedule"
       containers:
         - name: acpi-exporter
-          image: ghcr.io/amirhnajafiz/acpi-exporter:v0.1.0
+          image: ghcr.io/amirhnajafiz/acpi-exporter:v0.2.0
           imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem: true
           env:
           - name: "NODE_NAME"
             valueFrom:
