@@ -8,12 +8,17 @@ class EnergyCollector(Collector):
     Energy collector for gathering total energy consumption metrics.
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         label_names = list(labels.keys()) + ["source"]
         self.energy_joules_gauge = Gauge(
-            "energy_consumed_joules", "Total energy consumed in Joules", labelnames=label_names
+            "energy_consumed_joules", 
+            "Total energy consumed in Joules", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=label_names,
         )
 
     def collect(self):

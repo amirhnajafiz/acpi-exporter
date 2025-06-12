@@ -8,15 +8,23 @@ class BatteryCollector(Collector):
     This collector uses the psutil library to access battery information.
     """
 
-    def __init__(self, **labels):
+    def __init__(self, namespace: str, subsystem: str, **labels):
         self.labels = labels
         label_names = list(labels.keys())
         
         self.battery_pct_gauge = Gauge(
-            "battery_pct", "Battery percentage", labelnames=label_names
+            "battery_pct",
+            "Battery percentage", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=label_names,
         )
         self.battery_secs_left_gauge = Gauge(
-            "battery_secs_left", "Seconds of battery left", labelnames=label_names
+            "battery_secs_left",
+            "Seconds of battery left", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=label_names,
         )
 
     def collect(self):

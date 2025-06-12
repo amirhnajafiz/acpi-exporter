@@ -8,11 +8,16 @@ class IdleTimeCollector(Collector):
     Collector for system idle time (seconds).
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         self.idle_time_gauge = Gauge(
-            "system_idle_time_seconds", "System idle time in seconds", labelnames=list(labels.keys())
+            "system_idle_time_seconds", 
+            "System idle time in seconds", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=list(labels.keys()),
         )
 
     def collect(self):

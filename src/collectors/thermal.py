@@ -11,12 +11,17 @@ class ThermalCollector(Collector):
     This collector uses the psutil library to access temperature information.
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         label_names = list(labels.keys()) + ["device", "sensor"]
         self.temp_gauge = Gauge(
-            "temperature_celsius", "Temperature in Celsius", labelnames=label_names
+            "temperature_celsius", 
+            "Temperature in Celsius", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=label_names,
         )
 
     def collect(self):

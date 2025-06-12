@@ -8,11 +8,16 @@ class BatteryCycleCollector(Collector):
     Collector for battery cycle count.
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         self.cycle_gauge = Gauge(
-            "battery_cycle_count", "Battery cycle count", labelnames=list(labels.keys()) + ["battery"]
+            "battery_cycle_count",
+            "Battery cycle count",
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=list(labels.keys()) + ["battery"],
         )
 
     def collect(self):

@@ -9,12 +9,17 @@ class FansCollector(Collector):
     This collector uses the psutil library to access fan information.
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         label_names = list(labels.keys()) + ["device", "fan"]
         self.fan_speed_gauge = Gauge(
-            "fan_speed_rpm", "Fan speed in RPM", labelnames=label_names
+            "fan_speed_rpm", 
+            "Fan speed in RPM", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=label_names,
         )
 
     def collect(self):

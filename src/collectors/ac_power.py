@@ -8,11 +8,16 @@ class ACPowerCollector(Collector):
     Collector for AC power connection status.
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         self.ac_power_gauge = Gauge(
-            "ac_power_online", "AC power connected (1=online, 0=offline)", labelnames=list(labels.keys())
+            "ac_power_online", 
+            "AC power connected (1=online, 0=offline)", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=list(labels.keys()),
         )
 
     def collect(self):

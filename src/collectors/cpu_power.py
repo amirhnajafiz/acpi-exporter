@@ -8,11 +8,17 @@ class CPUPowerCollector(Collector):
     Collector for CPU package power usage (Watts).
     """
 
-    def __init__(self, **labels):
+    def __init__(self, namespace: str, subsystem: str, **labels):
         self.labels = labels
+        
         self.cpu_power_gauge = Gauge(
-            "cpu_power_watts", "CPU package power usage in Watts", labelnames=list(labels.keys())
+            "cpu_power_watts", 
+            "CPU package power usage in Watts", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=list(labels.keys()),
         )
+        
         self.last_energy = None
         self.last_time = None
 

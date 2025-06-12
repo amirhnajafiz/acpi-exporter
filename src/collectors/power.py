@@ -9,12 +9,17 @@ class PowerCollector(Collector):
     This collector may use platform-specific methods (e.g., reading from /sys/class/powercap on Linux).
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         label_names = list(labels.keys()) + ["source"]
         self.power_watts_gauge = Gauge(
-            "power_usage_watts", "System power usage in Watts", labelnames=label_names
+            "power_usage_watts",
+            "System power usage in Watts",
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=label_names,
         )
 
     def collect(self):

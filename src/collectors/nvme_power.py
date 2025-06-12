@@ -8,11 +8,16 @@ class NVMePowerCollector(Collector):
     Collector for NVMe SSD power state.
     """
 
-    def __init__(self, exec_info: bool, **labels):
+    def __init__(self, exec_info: bool, namespace: str, subsystem: str, **labels):
         self.labels = labels
         self.exec_info = exec_info
+        
         self.nvme_power_state_gauge = Gauge(
-            "nvme_power_state", "NVMe SSD power state", labelnames=list(labels.keys()) + ["device"]
+            "nvme_power_state", 
+            "NVMe SSD power state", 
+            namespace=namespace,
+            subsystem=subsystem,
+            labelnames=list(labels.keys()) + ["device"],
         )
 
     def collect(self):
